@@ -79,7 +79,6 @@ module.exports = class TodoDataService {
       let toDos = await dynamoClient.get(params).promise().then((data) => {
         return data.Item;
       });
-      console.log(toDos);
       return toDos;
 
     } catch (error) {
@@ -152,7 +151,9 @@ module.exports = class TodoDataService {
       }
 
       // Check the "tododata" table for the tododata item, and set it to "existingTodo"
-      // let existingTodo = ...
+      let existingTodo = await dynamoClient.get(params).promise().then((data) => {
+        return data.Item;
+      });
 
       existingTodo.order = existingTodo.order.filter((orderId) => {
         return orderId !== id
@@ -167,7 +168,10 @@ module.exports = class TodoDataService {
         }
       }
 
+      
       // Replace the existing tododata item with the updated one
+      await dynamoClient.put(params).promise();
+
     } catch (error) {
       console.error(error);
       return error;
