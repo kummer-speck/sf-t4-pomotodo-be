@@ -18,7 +18,10 @@ module.exports = class TodoDataService {
 
     try {
       // Check the "tododata" table for existing a tododata item
-      // let existingTodoData = ...
+      //let existingTodoData = ...
+      let existingTodoData = await dynamoClient.scan(params).promise().then((data) => {
+        return data;
+      });
       
       // no tododata exists yet
       if (existingTodoData.Items.length === 0) {
@@ -35,23 +38,28 @@ module.exports = class TodoDataService {
           TableName,
           Item: newTodoData,
         }
-        // ...
-
-        // Return the newly created tododata item
+        // ... This is where the PUT goes?
+        await dynamoClient.put(params).promise();
+        
       } else { // a tododata item already exist
         existingTodoData = existingTodoData.Items[0];
         existingTodoData.order.push(id);
         existingTodoData.todos[id] = todo;
         
-        // Replace the existing tododata item with the new one, created in the above three lines
+        // Replace the existing tododata item with the new one, created in the above three lines        
         const params = {
           TableName,
           Item: existingTodoData,
         }
-        // ...
-
-        // Return the newly created tododata item
+        // ... Use PUT?
+        await dynamoClient.put(params).promise();
+        // Return the newly created tododata item line 64
       }
+      let newItem = await dynamoClient.scan(params).promise().then((data) => {
+        return data.Items[0];
+      });q
+      // Return the newly created tododata item
+      return newItem;
     } catch (error) {
       console.error(error);
       return error;
