@@ -77,7 +77,7 @@ module.exports = class TodoDataService {
 
       // Check the "tododata" table for the tododata item, and return it
       let toDos = await dynamoClient.get(params).promise().then((data) => {
-        return data.Item[0];
+        return data.Item;
       });
       console.log(toDos);
       return toDos;
@@ -95,16 +95,17 @@ module.exports = class TodoDataService {
         Key: {
           id: "0"
         },
-        // UpdateExpression: ...
-        // ExpressionAttributeNames: {
-        //   ...
-        // },
-        // ExpressionAttributeValues: {
-        //   ...
-        // },
+        UpdateExpression: "set #order = :newOrder" ,
+          ExpressionAttributeNames: {
+            "#order": "order"
+        },
+        ExpressionAttributeValues: {
+          ":newOrder": options.order,
+        },
       }
-
       // Update the tododata item
+      await dynamoClient.update(params).promise();
+
     } catch (error) {
       console.error(error);
       return error;
